@@ -47,14 +47,14 @@ nav a {
     max-width: 100%;
     height: auto;
 }
-#cart {
+#cart, #orders {
     margin-top: 20px;
 }
-#cart table, #orders-table {
+table {
     width: 100%;
     border-collapse: collapse;
 }
-#cart th, #cart td, #orders-table th, #orders-table td {
+th, td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;

@@ -1,5 +1,13 @@
+const products = [
+    { id: 1, name: "Product 1", price: 100, image: "https://via.placeholder.com/150" },
+    { id: 2, name: "Product 2", price: 200, image: "https://via.placeholder.com/150" },
+    // Repeat similar objects for products 3 to 20
+    { id: 20, name: "Product 20", price: 2000, image: "https://via.placeholder.com/150" },
+];
+
 let currentPage = 'login-page';
 let cart = [];
+let orders = [];
 const adminPassword = 'CSEPG25';
 
 function showPage(page) {
@@ -24,7 +32,7 @@ function login(type) {
         sessionStorage.setItem('user', JSON.stringify({ type: 'customer', name }));
         document.getElementById('my-cart-link').classList.remove('hidden');
         showPage('products-page');
-        fetchProducts();
+        renderProducts();
     } else if (type === 'admin') {
         const password = document.getElementById('admin-password').value;
         if (password !== adminPassword) {
@@ -33,7 +41,7 @@ function login(type) {
         }
         sessionStorage.setItem('user', JSON.stringify({ type: 'admin' }));
         showPage('admin-page');
-        fetchOrders();
+        renderOrders();
     }
     document.getElementById('logout-link').classList.remove('hidden');
 }
@@ -45,13 +53,7 @@ function logout() {
     showPage('login-page');
 }
 
-async function fetchProducts() {
-    const response = await fetch('/api/products');
-    const products = await response.json();
-    renderProducts(products);
-}
-
-function renderProducts(products) {
+function renderProducts() {
     const container = document.getElementById('products-container');
     container.innerHTML = '';
     products.forEach(product => {
@@ -83,17 +85,16 @@ function showCart() {
     container.innerHTML = '';
     let total = 0;
     cart.forEach(item => {
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${item.name}</td>
             <td>${item.quantity}</td>
             <td>BDT ${item.price}</td>
-            <td>BDT ${itemTotal}</td>
+            <td>BDT ${item.quantity * item.price}</td>
             <td><button onclick="removeFromCart(${item.id})">Remove</button></td>
         `;
         container.appendChild(row);
+        total += item.quantity * item.price;
     });
     document.getElementById('cart-total').textContent = `Subtotal: BDT ${total}`;
 }
@@ -103,55 +104,34 @@ function removeFromCart(productId) {
     showCart();
 }
 
-async function confirmOrder() {
-    if (cart.length === 0) {
-        alert('Your cart is empty.');
-        return;
-    }
+function confirmOrder() {
     const user = JSON.parse(sessionStorage.getItem('user'));
     if (!user || user.type !== 'customer') {
-        alert('You must be logged in as a customer to place an order.');
+        alert('Only customers can place orders.');
         return;
     }
-    const orderData = {
-        customerName: user.name,
-        cart: cart,
-    };
-    const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-    });
-    if (response.ok) {
-        alert('Order confirmed!');
-        cart = [];
-        showCart();
-    } else {
-        alert('Failed to confirm order.');
+    if (cart.length === 0) {
+        alert('Cart is empty.');
+        return;
     }
+    orders.push({ customer: user.name, items: [...cart] });
+    cart = [];
+    alert('Order confirmed!');
+    showCart();
 }
 
-async function fetchOrders() {
-    const response = await fetch('/api/orders');
-    const orders = await response.json();
-    renderOrders(orders);
-}
-
-function renderOrders(orders) {
+function renderOrders() {
     const container = document.getElementById('orders-container');
     container.innerHTML = '';
     orders.forEach(order => {
-        order.cart.forEach(item => {
+        order.items.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${order.customerName}</td>
+                <td>${order.customer}</td>
                 <td>${item.name}</td>
                 <td>${item.quantity}</td>
-                <td>BDT ${item.price * item.quantity}</td>
+                <td>BDT ${item.quantity * item.price}</td>
             `;
             container.appendChild(row);
         });
     });
-}
