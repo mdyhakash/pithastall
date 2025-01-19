@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div id="logo">E-Commerce Store</div>
+        <nav>
+            <a id="my-cart-link" onclick="showCart()" class="hidden">My Cart</a>
+            <a id="logout-link" onclick="logout()" class="hidden">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Login Page -->
+    <main id="login-page" class="page active">
+        <h1>Login</h1>
+        <label for="user-type">Select User Type:</label>
+        <select id="user-type" onchange="toggleLoginFields()">
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+        </select>
+
+        <div id="customer-login" class="login-section">
+            <label for="customer-name">Enter Your Name:</label>
+            <input type="text" id="customer-name" placeholder="Your Name">
+            <button onclick="login('customer')">Login as Customer</button>
+        </div>
+
+        <div id="admin-login" class="login-section hidden">
+            <label for="admin-password">Enter Admin Password:</label>
+            <input type="password" id="admin-password" placeholder="Password">
+            <button onclick="login('admin')">Login as Admin</button>
+        </div>
+    </main>
+
+    <!-- Products Page -->
+    <main id="products-page" class="page">
+        <h1>Products</h1>
+        <div class="products" id="products-container"></div>
+    </main>
+
+    <!-- Cart Page -->
+    <main id="cart-page" class="page">
+        <h1>My Cart</h1>
+        <div id="cart">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-container"></tbody>
+            </table>
+            <p id="cart-total">Subtotal: $0</p>
+            <button onclick="confirmOrder()">Confirm Order</button>
+        </div>
+    </main>
+
+    <!-- Admin Page -->
+    <main id="admin-page" class="page">
+        <h1>Admin Panel</h1>
+        <div>
+            <table id="orders-table">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-container"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="function.js"></script>
+</body>
+</html>
