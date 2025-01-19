@@ -135,3 +135,4 @@ function renderOrders() {
             container.appendChild(row);
         });
     });
+}
