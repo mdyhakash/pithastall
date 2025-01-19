@@ -1,7 +1,23 @@
 const products = [
     { id: 1, name: "Product 1", price: 100, image: "https://via.placeholder.com/150" },
     { id: 2, name: "Product 2", price: 200, image: "https://via.placeholder.com/150" },
-    // Repeat similar objects for products 3 to 20
+    { id: 3, name: "Product 3", price: 300, image: "https://via.placeholder.com/150" },
+    { id: 4, name: "Product 4", price: 400, image: "https://via.placeholder.com/150" },
+    { id: 5, name: "Product 5", price: 500, image: "https://via.placeholder.com/150" },
+    { id: 6, name: "Product 6", price: 600, image: "https://via.placeholder.com/150" },
+    { id: 7, name: "Product 7", price: 700, image: "https://via.placeholder.com/150" },
+    { id: 8, name: "Product 8", price: 800, image: "https://via.placeholder.com/150" },
+    { id: 9, name: "Product 9", price: 900, image: "https://via.placeholder.com/150" },
+    { id: 10, name: "Product 10", price: 1000, image: "https://via.placeholder.com/150" },
+    { id: 11, name: "Product 11", price: 1100, image: "https://via.placeholder.com/150" },
+    { id: 12, name: "Product 12", price: 1200, image: "https://via.placeholder.com/150" },
+    { id: 13, name: "Product 13", price: 1300, image: "https://via.placeholder.com/150" },
+    { id: 14, name: "Product 14", price: 1400, image: "https://via.placeholder.com/150" },
+    { id: 15, name: "Product 15", price: 1500, image: "https://via.placeholder.com/150" },
+    { id: 16, name: "Product 16", price: 1600, image: "https://via.placeholder.com/150" },
+    { id: 17, name: "Product 17", price: 1700, image: "https://via.placeholder.com/150" },
+    { id: 18, name: "Product 18", price: 1800, image: "https://via.placeholder.com/150" },
+    { id: 19, name: "Product 19", price: 1900, image: "https://via.placeholder.com/150" },
     { id: 20, name: "Product 20", price: 2000, image: "https://via.placeholder.com/150" },
 ];
 
@@ -40,14 +56,14 @@ function login(type) {
             return;
         }
         sessionStorage.setItem('user', JSON.stringify({ type: 'admin' }));
+        document.getElementById('logout-link').classList.remove('hidden');
         showPage('admin-page');
         renderOrders();
     }
-    document.getElementById('logout-link').classList.remove('hidden');
 }
 
 function logout() {
-    sessionStorage.clear();
+    sessionStorage.removeItem('user');
     document.getElementById('my-cart-link').classList.add('hidden');
     document.getElementById('logout-link').classList.add('hidden');
     showPage('login-page');
@@ -61,22 +77,23 @@ function renderProducts() {
         card.className = 'product-card';
         card.innerHTML = `
             <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3>
+            <h2>${product.name}</h2>
             <p>Price: BDT ${product.price}</p>
-            <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Add to Cart</button>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
         `;
         container.appendChild(card);
     });
 }
 
-function addToCart(productId, productName, productPrice) {
-    const existing = cart.find(item => item.id === productId);
-    if (existing) {
-        existing.quantity++;
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+        item.quantity++;
     } else {
-        cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
+        cart.push({ ...product, quantity: 1 });
     }
-    alert(`${productName} added to cart.`);
+    alert(`${product.name} has been added to your cart.`);
 }
 
 function showCart() {
@@ -114,15 +131,29 @@ function confirmOrder() {
         alert('Cart is empty.');
         return;
     }
-    orders.push({ customer: user.name, items: [...cart] });
+
+    // Add order details to the `orders` array
+    orders.push({
+        customer: user.name,
+        items: [...cart],
+    });
+
+    // Clear the cart and notify the user
     cart = [];
     alert('Order confirmed!');
+
+    // Clear and update the cart view
     showCart();
+
+    // Update admin view dynamically
+    if (currentPage === 'admin-page') {
+        renderOrders();
+    }
 }
 
 function renderOrders() {
     const container = document.getElementById('orders-container');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear existing orders
     orders.forEach(order => {
         order.items.forEach(item => {
             const row = document.createElement('tr');
